@@ -1,0 +1,2 @@
+apscheduler.scheduler => INFO => Scheduler started
+__main__ => INFO => Received search query: 'Толстой' from user: 750161327
