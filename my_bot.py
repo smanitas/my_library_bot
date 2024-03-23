@@ -9,15 +9,17 @@ from telegram.ext import (
 )
 import requests
 import logging
+import logging.config
 import os
 
-# Set up basic logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+# Loading the logging configuration
+logging.config.fileConfig("logging_config.ini", disable_existing_loggers=False)
+
+# Using the specifically configured logger
+logger = logging.getLogger("my_bot")
 
 
+# General part of the code
 def start(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_user.id
     logger.info(f"User: {user_id} executed command: /start")
@@ -29,6 +31,11 @@ def start(update: Update, context: CallbackContext) -> None:
 def search_book_message(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_user.id
     query = " ".join(context.args) if context.args else update.message.text
+    if len(query) > 200:
+        logger.info(f"User: {user_id} tried to execute a too long query.")
+        update.message.reply_text("Your query is too long, please make it shorter.")
+        return
+
     logger.info(f"Received search query: '{query}' from user: {user_id}")
     try:
         response = requests.get(
